@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.shape.Rectangle?>
+
+<StackPane xmlns="http://javafx.com/javafx/17"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.example.jdbc_assignment.controllers.LoginController"
+           styleClass="login-container">
+
+    <!-- Background with animated gradient -->
+    <Rectangle styleClass="background-gradient" width="1000" height="700"/>
+
+    <!-- Main Content -->
+    <VBox styleClass="login-card" maxWidth="400" maxHeight="500" spacing="20">
+        <padding>
+            <Insets top="30" right="40" bottom="30" left="40"/>
+        </padding>
+
+        <!-- App Logo -->
+        <StackPane styleClass="logo-container">
+            <FontIcon iconLiteral="fas-cube" iconSize="48" styleClass="logo-icon"/>
+        </StackPane>
+
+        <Text styleClass="login-title" text="Welcome Back"/>
+        <Text styleClass="login-subtitle" text="Login to your account"/>
+
+        <!-- Login Form -->
+        <VBox spacing="15">
+            <!-- Email Field -->
+            <VBox styleClass="input-group">
+                <Label text="EMAIL" styleClass="input-label"/>
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <FontIcon iconLiteral="fas-envelope" styleClass="field-icon"/>
+                    <TextField fx:id="emailField" styleClass="styled-text-field" HBox.hgrow="ALWAYS"/>
+                </HBox>
+            </VBox>
+
+            <!-- Password Field -->
+            <VBox styleClass="input-group">
+                <Label text="PASSWORD" styleClass="input-label"/>
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <FontIcon iconLiteral="fas-lock" styleClass="field-icon"/>
+                    <PasswordField fx:id="passwordField" styleClass="styled-text-field" HBox.hgrow="ALWAYS"/>
+                </HBox>
+            </VBox>
+
+            <!-- Remember Me & Forgot Password -->
+            <HBox alignment="CENTER_LEFT">
+                <CheckBox text="Remember me" styleClass="remember-me"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Hyperlink text="Forgot password?" styleClass="forgot-password"/>
+            </HBox>
+        </VBox>
+
+        <!-- Login Button -->
+        <Button styleClass="login-button" text="Login" onAction="#handleLogin"/>
+
+        <!-- Social Login Options -->
+        <VBox spacing="10" alignment="CENTER">
+            <Text styleClass="divider-text" text="or continue with"/>
+            <HBox spacing="15" alignment="CENTER">
+                <Button styleClass="social-button">
+                    <graphic>
+                        <FontIcon iconLiteral="fab-google" iconSize="20" styleClass="social-icon"/>
+                    </graphic>
+                </Button>
+                <Button styleClass="social-button">
+                    <graphic>
+                        <FontIcon iconLiteral="fab-github" iconSize="20" styleClass="social-icon"/>
+                    </graphic>
+                </Button>
+                <Button styleClass="social-button">
+                    <graphic>
+                        <FontIcon iconLiteral="fab-linkedin" iconSize="20" styleClass="social-icon"/>
+                    </graphic>
+                </Button>
+            </HBox>
+        </VBox>
+
+        <!-- Register Link -->
+        <HBox alignment="CENTER" spacing="5">
+            <Text styleClass="register-text" text="Don't have an account?"/>
+            <Hyperlink styleClass="register-link" text="Sign up" onAction="#switchToRegister"/>
+        </HBox>
+    </VBox>
+</StackPane>

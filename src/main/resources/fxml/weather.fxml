@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.jdbc_assignment.controllers.WeatherController"
+            styleClass="main-container">
+
+    <!-- Sidebar - Same as other screens -->
+    <VBox styleClass="sidebar" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0">
+        <padding>
+            <Insets top="30" right="15" bottom="30" left="15"/>
+        </padding>
+
+        <!-- App Logo -->
+        <StackPane styleClass="logo-container">
+            <HBox alignment="CENTER" spacing="10">
+                <FontIcon iconLiteral="fas-leaf" iconSize="32" styleClass="logo-icon"/>
+                <Text styleClass="app-title" text="Farmers' Market"/>
+            </HBox>
+        </StackPane>
+
+        <!-- Navigation -->
+        <VBox styleClass="nav-menu" spacing="10">
+            <Button fx:id="dashboardButton" styleClass="nav-button" text="Dashboard" onAction="#handleDashboardAction">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <FontIcon iconLiteral="fas-tachometer-alt" iconSize="18"/>
+                </HBox>
+            </Button>
+
+            <Button fx:id="produceButton" styleClass="nav-button" text="Produce" onAction="#handleProduceAction">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <FontIcon iconLiteral="fas-seedling" iconSize="18"/>
+                </HBox>
+            </Button>
+
+            <Button fx:id="inventoryButton" styleClass="nav-button" text="Inventory" onAction="#handleInventoryAction">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <FontIcon iconLiteral="fas-warehouse" iconSize="18"/>
+                </HBox>
+            </Button>
+
+            <Button fx:id="salesButton" styleClass="nav-button" text="Sales" onAction="#handleSalesAction">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <FontIcon iconLiteral="fas-shopping-cart" iconSize="18"/>
+                </HBox>
+            </Button>
+
+            <Button fx:id="marketPricesButton" styleClass="nav-button" text="Market Prices" onAction="#handleMarketPricesAction">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <FontIcon iconLiteral="fas-chart-line" iconSize="18"/>
+                </HBox>
+            </Button>
+
+            <Button fx:id="weatherButton" styleClass="nav-button, active-nav-item" text="Weather" onAction="#handleWeatherAction">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <FontIcon iconLiteral="fas-cloud-sun" iconSize="18"/>
+                </HBox>
+            </Button>
+        </VBox>
+
+        <Region VBox.vgrow="ALWAYS"/>
+
+        <!-- User Profile -->
+        <VBox styleClass="user-profile">
+            <Button styleClass="profile-button" onAction="#handleProfileAction">
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <FontIcon iconLiteral="fas-user-circle" iconSize="24"/>
+                    <VBox>
+                        <Text fx:id="userNameText" styleClass="user-name" text="Farmer Name"/>
+                        <Text styleClass="user-role" text="Farmer"/>
+                    </VBox>
+                </HBox>
+            </Button>
+            <Button styleClass="logout-button" text="Logout" onAction="#handleLogoutAction">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <FontIcon iconLiteral="fas-sign-out-alt" iconSize="18"/>
+                </HBox>
+            </Button>
+        </VBox>
+    </VBox>
+
+    <!-- Main Content Area -->
+    <VBox fx:id="mainContentVBox" AnchorPane.leftAnchor="250.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0">
+        <!-- Top Bar -->
+        <HBox styleClass="top-bar" spacing="15" alignment="CENTER_LEFT">
+            <padding>
+                <Insets top="10" right="20" bottom="10" left="20"/>
+            </padding>
+
+            <HBox alignment="CENTER_LEFT" spacing="10" styleClass="search-field-container" HBox.hgrow="ALWAYS">
+                <Label text="Location:" styleClass="location-label"/>
+                <TextField fx:id="locationField" promptText="Enter location (e.g., Accra, Ghana)" styleClass="search-field" HBox.hgrow="ALWAYS"/>
+            </HBox>
+
+            <Button styleClass="primary-button" text="Get Weather" onAction="#handleGetWeatherAction">
+                <graphic>
+                    <FontIcon iconLiteral="fas-search" iconSize="14"/>
+                </graphic>
+            </Button>
+        </HBox>
+
+        <!-- Weather Content -->
+        <ScrollPane fitToWidth="true" styleClass="dashboard-content" VBox.vgrow="ALWAYS">
+            <VBox spacing="20">
+                <padding>
+                    <Insets top="20" right="20" bottom="20" left="20"/>
+                </padding>
+
+                <!-- Current Weather Card -->
+                <VBox fx:id="currentWeatherCard" styleClass="weather-card">
+                    <padding>
+                        <Insets top="20" right="20" bottom="20" left="20"/>
+                    </padding>
+                    <HBox alignment="CENTER_LEFT" spacing="20">
+                        <VBox alignment="CENTER" spacing="10" minWidth="150">
+                            <FontIcon fx:id="weatherIcon" iconLiteral="fas-cloud" iconSize="64" styleClass="weather-icon"/>
+                            <Text fx:id="temperatureText" styleClass="temperature-text" text="--°C"/>
+                            <Text fx:id="weatherDescription" styleClass="weather-description" text="--"/>
+                        </VBox>
+                        <VBox spacing="10" HBox.hgrow="ALWAYS">
+                            <Text fx:id="locationText" styleClass="location-text" text="Location"/>
+                            <Text fx:id="dateTimeText" styleClass="date-text" text="Date and Time"/>
+                            <HBox spacing="20">
+                                <VBox spacing="5">
+                                    <HBox alignment="CENTER_LEFT" spacing="5">
+                                        <FontIcon iconLiteral="fas-thermometer-half" iconSize="16"/>
+                                        <Text text="Feels like:"/>
+                                        <Text fx:id="feelsLikeText" text="--°C"/>
+                                    </HBox>
+                                    <HBox alignment="CENTER_LEFT" spacing="5">
+                                        <FontIcon iconLiteral="fas-tint" iconSize="16"/>
+                                        <Text text="Humidity:"/>
+                                        <Text fx:id="humidityText" text="--%"/>
+                                    </HBox>
+                                </VBox>
+                                <VBox spacing="5">
+                                    <HBox alignment="CENTER_LEFT" spacing="5">
+                                        <FontIcon iconLiteral="fas-wind" iconSize="16"/>
+                                        <Text text="Wind:"/>
+                                        <Text fx:id="windText" text="-- m/s"/>
+                                    </HBox>
+                                    <HBox alignment="CENTER_LEFT" spacing="5">
+                                        <FontIcon iconLiteral="fas-compass" iconSize="16"/>
+                                        <Text text="Direction:"/>
+                                        <Text fx:id="windDirectionText" text="--°"/>
+                                    </HBox>
+                                </VBox>
+                            </HBox>
+                        </VBox>
+                    </HBox>
+                </VBox>
+
+                <!-- Produce Weather Advisory Section -->
+                <VBox styleClass="weather-card">
+                    <padding>
+                        <Insets top="20" right="20" bottom="20" left="20"/>
+                    </padding>
+                    <Text styleClass="section-title" text="Crop Weather Advisory"/>
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <ComboBox fx:id="produceComboBox" promptText="Select a crop" styleClass="styled-combo-box" prefWidth="200"/>
+                        <Button styleClass="primary-button" text="Get Advice" onAction="#handleGetAdviceAction"/>
+                    </HBox>
+                    <VBox fx:id="adviceContainer" spacing="10" visible="false">
+                        <padding>
+                            <Insets top="15" bottom="0" left="0" right="0"/>
+                        </padding>
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <FontIcon iconLiteral="fas-seedling" iconSize="24" styleClass="crop-icon"/>
+                            <Text fx:id="cropNameText" styleClass="crop-name" text="Crop Name"/>
+                        </HBox>
+                        <HBox spacing="20">
+                            <VBox spacing="5" minWidth="180">
+                                <Text styleClass="subtitle" text="Temperature Range:"/>
+                                <Text fx:id="tempRangeText" text="-- to --°C"/>
+                                <Text styleClass="subtitle" text="Optimal: --°C"/>
+                            </VBox>
+                            <VBox spacing="5" minWidth="180">
+                                <Text styleClass="subtitle" text="Humidity Range:"/>
+                                <Text fx:id="humidityRangeText" text="-- to --%"/>
+                                <Text styleClass="subtitle" text="Optimal: --%"/>
+                            </VBox>
+                        </HBox>
+                        <Text styleClass="subtitle" text="Planting Season:"/>
+                        <Text fx:id="plantingSeasonText" text="--"/>
+                        <Text styleClass="subtitle" text="Harvest Season:"/>
+                        <Text fx:id="harvestSeasonText" text="--"/>
+                        <Text styleClass="subtitle" text="Weather Advisory:"/>
+                        <Text fx:id="adviceText" styleClass="advice-text" text="Select a crop and location to get weather advice."/>
+                    </VBox>
+                </VBox>
+
+                <!-- Forecast Section -->
+                <VBox styleClass="weather-card">
+                    <padding>
+                        <Insets top="20" right="20" bottom="20" left="20"/>
+                    </padding>
+                    <Text styleClass="section-title" text="5-Day Forecast"/>
+                    <HBox fx:id="forecastContainer" spacing="15" alignment="CENTER">
+                        <!-- Forecast cards will be added dynamically -->
+                        <VBox styleClass="forecast-day">
+                            <VBox alignment="CENTER" spacing="5">
+                                <Text styleClass="forecast-date" text="--"/>
+                                <FontIcon iconLiteral="fas-cloud" iconSize="32" styleClass="forecast-icon"/>
+                                <Text styleClass="forecast-temp" text="--°C"/>
+                                <Text styleClass="forecast-desc" text="--"/>
+                            </VBox>
+                        </VBox>
+                    </HBox>
+                </VBox>
+
+                <!-- Tips Section -->
+                <VBox styleClass="weather-card">
+                    <padding>
+                        <Insets top="20" right="20" bottom="20" left="20"/>
+                    </padding>
+                    <Text styleClass="section-title" text="Weather Tips for Farmers"/>
+                    <VBox spacing="10">
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <FontIcon iconLiteral="fas-tint" iconSize="18" styleClass="tip-icon"/>
+                            <Text styleClass="tip-text" text="Monitor rainfall patterns and adjust irrigation accordingly."/>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <FontIcon iconLiteral="fas-thermometer-half" iconSize="18" styleClass="tip-icon"/>
+                            <Text styleClass="tip-text" text="Extreme temperatures can affect crop growth. Provide shade where necessary."/>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <FontIcon iconLiteral="fas-wind" iconSize="18" styleClass="tip-icon"/>
+                            <Text styleClass="tip-text" text="Strong winds can damage crops. Consider windbreaks for protection."/>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <FontIcon iconLiteral="fas-cloud-sun-rain" iconSize="18" styleClass="tip-icon"/>
+                            <Text styleClass="tip-text" text="Unexpected weather changes can impact crop health. Stay updated with forecasts."/>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <FontIcon iconLiteral="fas-seedling" iconSize="18" styleClass="tip-icon"/>
+                            <Text styleClass="tip-text" text="Different crops have different weather requirements. Plan planting accordingly."/>
+                        </HBox>
+                    </VBox>
+                </VBox>
+
+            </VBox>
+        </ScrollPane>
+    </VBox>
+</AnchorPane>

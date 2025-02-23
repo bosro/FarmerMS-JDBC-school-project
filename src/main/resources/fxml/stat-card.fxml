@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+
+<fx:root type="javafx.scene.layout.VBox" styleClass="stat-card"
+         xmlns:fx="http://javafx.com/fxml">
+    <HBox alignment="CENTER_LEFT" spacing="15">
+        <StackPane styleClass="icon-container" fx:id="iconContainer"/>
+        <VBox spacing="5">
+            <Text fx:id="titleLabel" styleClass="card-title"/>
+            <Text fx:id="valueLabel" styleClass="card-value"/>
+            <Text fx:id="trendLabel" styleClass="card-trend"/>
+        </VBox>
+    </HBox>
+</fx:root>

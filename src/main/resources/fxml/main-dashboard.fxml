@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.jdbc_assignment.controllers.FarmerDashboardController"
+            styleClass="main-container">
+
+    <!-- Sidebar -->
+    <VBox  styleClass="sidebar" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0">
+        <padding>
+            <Insets top="30" right="15" bottom="30" left="15"/>
+        </padding>
+
+        <!-- App Logo -->
+        <StackPane styleClass="logo-container">
+            <HBox alignment="CENTER" spacing="10">
+                <FontIcon iconLiteral="fas-leaf" iconSize="32" styleClass="logo-icon"/>
+                <Text styleClass="app-title" text="Farmers' Market"/>
+            </HBox>
+        </StackPane>
+
+        <!-- Navigation -->
+        <VBox styleClass="nav-menu" spacing="10">
+            <Button fx:id="dashboardButton" styleClass="nav-button, active-nav-item" text="Dashboard" onAction="#handleDashboardAction">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <FontIcon iconLiteral="fas-tachometer-alt" iconSize="18"/>
+                </HBox>
+            </Button>
+
+            <Button fx:id="produceButton" styleClass="nav-button" text="Produce" onAction="#handleProduceAction">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <FontIcon iconLiteral="fas-seedling" iconSize="18"/>
+                </HBox>
+            </Button>
+
+            <Button fx:id="inventoryButton" styleClass="nav-button" text="Inventory" onAction="#handleInventoryAction">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <FontIcon iconLiteral="fas-warehouse" iconSize="18"/>
+                </HBox>
+            </Button>
+
+            <Button fx:id="salesButton" styleClass="nav-button" text="Sales" onAction="#handleSalesAction">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <FontIcon iconLiteral="fas-shopping-cart" iconSize="18"/>
+                </HBox>
+            </Button>
+
+            <Button fx:id="marketPricesButton" styleClass="nav-button" text="Market Prices" onAction="#handleMarketPricesAction">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <FontIcon iconLiteral="fas-chart-line" iconSize="18"/>
+                </HBox>
+            </Button>
+
+            <Button fx:id="weatherButton" styleClass="nav-button" text="Weather" onAction="#handleWeatherAction">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <FontIcon iconLiteral="fas-cloud-sun" iconSize="18"/>
+                </HBox>
+            </Button>
+        </VBox>
+
+        <Region VBox.vgrow="ALWAYS"/>
+
+        <!-- User Profile -->
+        <VBox styleClass="user-profile">
+            <Button styleClass="profile-button" onAction="#handleProfileAction">
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <FontIcon iconLiteral="fas-user-circle" iconSize="24"/>
+                    <VBox>
+                        <Text fx:id="userNameText" styleClass="user-name" text="Farmer Name"/>
+                        <Text styleClass="user-role" text="Farmer"/>
+                    </VBox>
+                </HBox>
+            </Button>
+            <Button styleClass="logout-button" text="Logout" onAction="#handleLogoutAction">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <FontIcon iconLiteral="fas-sign-out-alt" iconSize="18"/>
+                </HBox>
+            </Button>
+        </VBox>
+    </VBox>
+
+    <!-- Main Content Area -->
+    <VBox AnchorPane.leftAnchor="250.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0">
+        <!-- Top Bar -->
+        <HBox styleClass="top-bar" spacing="15" alignment="CENTER_LEFT">
+            <padding>
+                <Insets top="10" right="20" bottom="10" left="20"/>
+            </padding>
+
+            <HBox alignment="CENTER_LEFT" spacing="10" styleClass="search-field-container" HBox.hgrow="ALWAYS">
+                <FontIcon iconLiteral="fas-search" styleClass="search-icon"/>
+                <TextField fx:id="searchField" promptText="Search..." styleClass="search-field" HBox.hgrow="ALWAYS"/>
+            </HBox>
+
+            <HBox spacing="15" alignment="CENTER">
+                <Button styleClass="icon-button" onAction="#handleRefreshAction">
+                    <HBox alignment="CENTER">
+                        <FontIcon iconLiteral="fas-sync-alt" iconSize="18"/>
+                    </HBox>
+                </Button>
+                <Button styleClass="icon-button" onAction="#handleSettingsAction">
+                    <HBox alignment="CENTER">
+                        <FontIcon iconLiteral="fas-cog" iconSize="18"/>
+                    </HBox>
+                </Button>
+            </HBox>
+        </HBox>
+
+        <!-- Dashboard Content -->
+        <ScrollPane fitToWidth="true" styleClass="dashboard-content" VBox.vgrow="ALWAYS">
+            <VBox spacing="30">
+                <padding>
+                    <Insets top="20" right="20" bottom="20" left="20"/>
+                </padding>
+
+                <!-- Stats Cards -->
+                <GridPane hgap="20" vgap="20">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" percentWidth="25"/>
+                        <ColumnConstraints hgrow="SOMETIMES" percentWidth="25"/>
+                        <ColumnConstraints hgrow="SOMETIMES" percentWidth="25"/>
+                        <ColumnConstraints hgrow="SOMETIMES" percentWidth="25"/>
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints vgrow="SOMETIMES"/>
+                    </rowConstraints>
+
+                    <!-- Total Sales Card -->
+                    <VBox styleClass="stat-card" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                        <padding>
+                            <Insets top="15" right="15" bottom="15" left="15"/>
+                        </padding>
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <FontIcon iconLiteral="fas-dollar-sign" iconSize="24"/>
+                            <VBox>
+                                <Text styleClass="card-title" text="Total Sales"/>
+                                <Text fx:id="totalSalesValue" styleClass="card-value" text="₵0.00"/>
+                                <Text fx:id="salesTrend" styleClass="card-trend" text="+0%"/>
+                            </VBox>
+                        </HBox>
+                    </VBox>
+
+                    <!-- Inventory Count Card -->
+                    <VBox styleClass="stat-card" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                        <padding>
+                            <Insets top="15" right="15" bottom="15" left="15"/>
+                        </padding>
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <FontIcon iconLiteral="fas-warehouse" iconSize="24"/>
+                            <VBox>
+                                <Text styleClass="card-title" text="Inventory Items"/>
+                                <Text fx:id="inventoryCountValue" styleClass="card-value" text="0"/>
+                                <Text fx:id="inventoryTrend" styleClass="card-trend" text="+0%"/>
+                            </VBox>
+                        </HBox>
+                    </VBox>
+
+                    <!-- Produce Types Card -->
+                    <VBox styleClass="stat-card" GridPane.columnIndex="2" GridPane.rowIndex="0">
+                        <padding>
+                            <Insets top="15" right="15" bottom="15" left="15"/>
+                        </padding>
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <FontIcon iconLiteral="fas-seedling" iconSize="24"/>
+                            <VBox>
+                                <Text styleClass="card-title" text="Produce Types"/>
+                                <Text fx:id="produceCountValue" styleClass="card-value" text="0"/>
+                                <Text fx:id="produceTrend" styleClass="card-trend" text="+0%"/>
+                            </VBox>
+                        </HBox>
+                    </VBox>
+
+                    <!-- Market Price Card -->
+                    <VBox styleClass="stat-card" GridPane.columnIndex="3" GridPane.rowIndex="0">
+                        <padding>
+                            <Insets top="15" right="15" bottom="15" left="15"/>
+                        </padding>
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <FontIcon iconLiteral="fas-chart-line" iconSize="24"/>
+                            <VBox>
+                                <Text styleClass="card-title" text="Average Market Price"/>
+                                <Text fx:id="marketPriceValue" styleClass="card-value" text="₵0.00/kg"/>
+                                <Text fx:id="marketPriceTrend" styleClass="card-trend" text="+0%"/>
+                            </VBox>
+                        </HBox>
+                    </VBox>
+                </GridPane>
+
+                <!-- Charts Section -->
+                <HBox spacing="20">
+                    <!-- Sales Chart -->
+                    <VBox styleClass="chart-container" HBox.hgrow="ALWAYS">
+                        <padding>
+                            <Insets top="15" right="15" bottom="15" left="15"/>
+                        </padding>
+                        <HBox styleClass="chart-header" alignment="CENTER_LEFT">
+                            <Text styleClass="chart-title" text="Sales Overview"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <ComboBox fx:id="salesPeriodSelector" styleClass="period-selector" promptText="This Month"/>
+                        </HBox>
+
+                        <LineChart fx:id="salesChart" styleClass="sales-chart">
+                            <xAxis>
+                                <CategoryAxis label="Date"/>
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis label="Sales (₵)"/>
+                            </yAxis>
+                        </LineChart>
+                    </VBox>
+
+                    <!-- Inventory Value Chart -->
+                    <VBox styleClass="chart-container" HBox.hgrow="ALWAYS">
+                        <padding>
+                            <Insets top="15" right="15" bottom="15" left="15"/>
+                        </padding>
+                        <HBox styleClass="chart-header" alignment="CENTER_LEFT">
+                            <Text styleClass="chart-title" text="Inventory Value"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <ComboBox fx:id="inventoryPeriodSelector" styleClass="period-selector" promptText="By Category"/>
+                        </HBox>
+
+                        <LineChart fx:id="inventoryChart" styleClass="inventory-chart">
+                            <xAxis>
+                                <CategoryAxis label="Category"/>
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis label="Value (₵)"/>
+                            </yAxis>
+                        </LineChart>
+                    </VBox>
+                </HBox>
+
+                <!-- Recent Sales -->
+                <VBox styleClass="activities-container">
+                    <HBox styleClass="section-header" alignment="CENTER_LEFT">
+                        <padding>
+                            <Insets top="15" right="15" bottom="15" left="15"/>
+                        </padding>
+                        <Text styleClass="section-title" text="Recent Sales"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Button styleClass="view-all-button" text="View All" onAction="#handleViewAllSalesAction"/>
+                    </HBox>
+
+                    <VBox fx:id="recentSalesContainer" styleClass="activity-list" spacing="10">
+                        <!-- Recent sales will be added dynamically -->
+                    </VBox>
+                </VBox>
+
+                <!-- Market Prices -->
+                <VBox styleClass="activities-container">
+                    <HBox styleClass="section-header" alignment="CENTER_LEFT">
+                        <padding>
+                            <Insets top="15" right="15" bottom="15" left="15"/>
+                        </padding>
+                        <Text styleClass="section-title" text="Latest Market Prices"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Button styleClass="view-all-button" text="View All" onAction="#handleViewAllPricesAction"/>
+                    </HBox>
+
+                    <VBox fx:id="marketPricesContainer" styleClass="activity-list" spacing="10">
+                        <!-- Market prices will be added dynamically -->
+                    </VBox>
+                </VBox>
+            </VBox>
+        </ScrollPane>
+    </VBox>
+</AnchorPane>
