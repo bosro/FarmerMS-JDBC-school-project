@@ -23,7 +23,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class MarketPricesController implements Initializable {
+public class MarketPricesController extends BaseController implements Initializable {
     @FXML private VBox mainContentVBox;
     @FXML private TableView<MarketPrice> marketPricesTable;
     @FXML private TableColumn<MarketPrice, String> produceNameColumn;
@@ -58,6 +58,14 @@ public class MarketPricesController implements Initializable {
         // Setup search functionality
         setupSearch();
 
+        marketPricesTable.setId("marketPricesTable");
+
+        // Make sure the table takes up available width
+        marketPricesTable.prefWidthProperty().bind(mainContentVBox.widthProperty().subtract(40));
+
+        // Add this to ensure row height is appropriate
+        marketPricesTable.setFixedCellSize(45);
+
         marketPricesTable.prefWidthProperty().bind(mainContentVBox.widthProperty().subtract(40));
 
         // Add event listener for window resizing to adjust column widths
@@ -74,23 +82,23 @@ public class MarketPricesController implements Initializable {
     }
 
     @FXML
+    private void handleProfileAction() {
+        // Simple implementation that won't cause errors
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Profile");
+        alert.setHeaderText("Profile Feature");
+        alert.setContentText("Profile functionality will be implemented in a future update.");
+        alert.showAndWait();
+    }
+
+    @FXML
     private void handleWeatherAction() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/weather.fxml"));
-            Parent weatherView = loader.load();
-
-            Stage stage = (Stage) dashboardButton.getScene().getWindow();
-            Scene scene = new Scene(weatherView);
-            scene.getStylesheets().add(getClass().getResource("/styles/dark-theme.css").toExternalForm());
-
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        // Use the helper method from BaseController
+        navigateTo("/fxml/weather.fxml", weatherButton);
     }
 
     private void setupTableColumns() {
+        // Set up cell value factories
         produceNameColumn.setCellValueFactory(cellData ->
                 new SimpleStringProperty(cellData.getValue().getProduceName()));
 
@@ -108,6 +116,22 @@ public class MarketPricesController implements Initializable {
 
         dateColumn.setCellValueFactory(cellData ->
                 new SimpleStringProperty(cellData.getValue().getDateRecorded()));
+
+        // Set specific column widths and style each column
+        produceNameColumn.setPrefWidth(200);
+        minPriceColumn.setPrefWidth(120);
+        maxPriceColumn.setPrefWidth(120);
+        avgPriceColumn.setPrefWidth(150);
+        marketColumn.setPrefWidth(180);
+        dateColumn.setPrefWidth(130);
+
+        // Set alignment for price columns (right-aligned)
+        minPriceColumn.setStyle("-fx-alignment: CENTER-RIGHT;");
+        maxPriceColumn.setStyle("-fx-alignment: CENTER-RIGHT;");
+        avgPriceColumn.setStyle("-fx-alignment: CENTER-RIGHT;");
+
+        // Make table columns resize with the table
+        marketPricesTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     }
 
     private void loadMarketPriceData() {
@@ -145,82 +169,30 @@ public class MarketPricesController implements Initializable {
     // Navigation Methods
     @FXML
     private void handleDashboardAction() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/main-dashboard.fxml"));
-            Parent dashboardView = loader.load();
-
-            Stage stage = (Stage) dashboardButton.getScene().getWindow();
-            Scene scene = new Scene(dashboardView);
-            scene.getStylesheets().add(getClass().getResource("/styles/dark-theme.css").toExternalForm());
-
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        navigateTo("/fxml/main-dashboard.fxml", dashboardButton);
     }
+
 
     @FXML
     private void handleProduceAction() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/produce-management.fxml"));
-            Parent produceView = loader.load();
-
-            Stage stage = (Stage) produceButton.getScene().getWindow();
-            Scene scene = new Scene(produceView);
-            scene.getStylesheets().add(getClass().getResource("/styles/dark-theme.css").toExternalForm());
-
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        navigateTo("/fxml/produce-management.fxml", produceButton);
     }
 
     @FXML
     private void handleInventoryAction() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/inventory-management.fxml"));
-            Parent inventoryView = loader.load();
-
-            Stage stage = (Stage) inventoryButton.getScene().getWindow();
-            Scene scene = new Scene(inventoryView);
-            scene.getStylesheets().add(getClass().getResource("/styles/dark-theme.css").toExternalForm());
-
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        navigateTo("/fxml/inventory-management.fxml", inventoryButton);
     }
 
     @FXML
     private void handleSalesAction() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/sales-management.fxml"));
-            Parent salesView = loader.load();
-
-            Stage stage = (Stage) salesButton.getScene().getWindow();
-            Scene scene = new Scene(salesView);
-            scene.getStylesheets().add(getClass().getResource("/styles/dark-theme.css").toExternalForm());
-
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        navigateTo("/fxml/sales-management.fxml", salesButton);
     }
 
     @FXML
     private void handleMarketPricesAction() {
         // Already on market prices page
-        resetNavButtonStyles();
+        resetNavButtonStyles(dashboardButton, produceButton, inventoryButton, salesButton, weatherButton);
         marketPricesButton.getStyleClass().add("active-nav-item");
-    }
-
-    @FXML
-    private void handleProfileAction() {
-        // Show profile dialog or navigate to profile page
     }
 
     @FXML
@@ -228,23 +200,11 @@ public class MarketPricesController implements Initializable {
         // Clear session
         SessionManager.clearSession();
 
-        // Stop services
+        // Stop services if needed
         MarketPriceService.stopPriceUpdateService();
 
         // Navigate to login
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/login.fxml"));
-            Parent loginView = loader.load();
-
-            Stage stage = (Stage) dashboardButton.getScene().getWindow();
-            Scene scene = new Scene(loginView);
-            scene.getStylesheets().add(getClass().getResource("/styles/dark-theme.css").toExternalForm());
-
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        navigateTo("/fxml/login.fxml", dashboardButton);
     }
 
     private void resetNavButtonStyles() {

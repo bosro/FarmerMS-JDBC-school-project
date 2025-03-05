@@ -175,7 +175,7 @@ public class ProduceManagementController implements Initializable {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/weather.fxml"));
             Parent weatherView = loader.load();
 
-            Stage stage = (Stage) dashboardButton.getScene().getWindow();
+            Stage stage = (Stage) weatherButton.getScene().getWindow();
             Scene scene = new Scene(weatherView);
             scene.getStylesheets().add(getClass().getResource("/styles/dark-theme.css").toExternalForm());
 
@@ -183,6 +183,15 @@ public class ProduceManagementController implements Initializable {
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
+            // Add this to see the actual error in console
+            System.err.println("Error navigating to weather: " + e.getMessage());
+
+            // Show an error dialog to the user
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Navigation Error");
+            alert.setHeaderText("Could not navigate to Weather");
+            alert.setContentText("Error: " + e.getMessage());
+            alert.showAndWait();
         }
     }
 

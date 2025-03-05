@@ -5,6 +5,10 @@
 <?import javafx.geometry.Insets?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 <?import javafx.scene.text.Text?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.control.Tooltip?>
 
 <AnchorPane xmlns="http://javafx.com/javafx/17"
             xmlns:fx="http://javafx.com/fxml/1"
@@ -86,165 +90,386 @@
     </VBox>
 
     <!-- Main Content Area -->
-    <VBox fx:id="mainContentVBox" AnchorPane.leftAnchor="250.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0">
+    <VBox AnchorPane.leftAnchor="250.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0">
         <!-- Top Bar -->
         <HBox styleClass="top-bar" spacing="15" alignment="CENTER_LEFT">
             <padding>
                 <Insets top="10" right="20" bottom="10" left="20"/>
             </padding>
 
-            <HBox alignment="CENTER_LEFT" spacing="10" styleClass="search-field-container" HBox.hgrow="ALWAYS">
-                <Label text="Location:" styleClass="location-label"/>
-                <TextField fx:id="locationField" promptText="Enter location (e.g., Accra, Ghana)" styleClass="search-field" HBox.hgrow="ALWAYS"/>
-            </HBox>
+            <Label text="Location:" styleClass="location-label"/>
+            <TextField fx:id="locationField" promptText="Enter location (e.g., Accra, Ghana)" HBox.hgrow="ALWAYS"/>
+
+            <Button styleClass="primary-button" onAction="#handleLocationSuggestions">
+                <tooltip>
+                    <Tooltip text="View common Ghana locations"/>
+                </tooltip>
+                <graphic>
+                    <FontIcon iconLiteral="fas-list" iconSize="14"/>
+                </graphic>
+            </Button>
 
             <Button styleClass="primary-button" text="Get Weather" onAction="#handleGetWeatherAction">
                 <graphic>
-                    <FontIcon iconLiteral="fas-search" iconSize="14"/>
+                    <FontIcon iconLiteral="fas-search-location" iconSize="14"/>
                 </graphic>
             </Button>
+
+            <Button styleClass="primary-button" onAction="#handleFarmingTips">
+                <tooltip>
+                    <Tooltip text="Ghana Farming Tips"/>
+                </tooltip>
+                <graphic>
+                    <FontIcon iconLiteral="fas-lightbulb" iconSize="14"/>
+                </graphic>
+            </Button>
+
+            <ProgressIndicator fx:id="loadingIndicator" progress="-1.0" visible="false" maxHeight="25" maxWidth="25"/>
         </HBox>
 
         <!-- Weather Content -->
-        <ScrollPane fitToWidth="true" styleClass="dashboard-content" VBox.vgrow="ALWAYS">
-            <VBox spacing="20">
-                <padding>
-                    <Insets top="20" right="20" bottom="20" left="20"/>
-                </padding>
+        <TabPane fx:id="weatherTabPane" VBox.vgrow="ALWAYS" styleClass="weather-tabs">
+            <!-- Current Weather Tab -->
+            <Tab text="Current Weather" closable="false">
+                <ScrollPane fitToWidth="true" styleClass="content-scroll">
+                    <VBox spacing="20" styleClass="content-area">
+                        <padding>
+                            <Insets top="20" right="20" bottom="20" left="20"/>
+                        </padding>
 
-                <!-- Current Weather Card -->
-                <VBox fx:id="currentWeatherCard" styleClass="weather-card">
-                    <padding>
-                        <Insets top="20" right="20" bottom="20" left="20"/>
-                    </padding>
-                    <HBox alignment="CENTER_LEFT" spacing="20">
-                        <VBox alignment="CENTER" spacing="10" minWidth="150">
-                            <FontIcon fx:id="weatherIcon" iconLiteral="fas-cloud" iconSize="64" styleClass="weather-icon"/>
-                            <Text fx:id="temperatureText" styleClass="temperature-text" text="--°C"/>
-                            <Text fx:id="weatherDescription" styleClass="weather-description" text="--"/>
-                        </VBox>
-                        <VBox spacing="10" HBox.hgrow="ALWAYS">
-                            <Text fx:id="locationText" styleClass="location-text" text="Location"/>
-                            <Text fx:id="dateTimeText" styleClass="date-text" text="Date and Time"/>
-                            <HBox spacing="20">
-                                <VBox spacing="5">
-                                    <HBox alignment="CENTER_LEFT" spacing="5">
-                                        <FontIcon iconLiteral="fas-thermometer-half" iconSize="16"/>
-                                        <Text text="Feels like:"/>
-                                        <Text fx:id="feelsLikeText" text="--°C"/>
-                                    </HBox>
-                                    <HBox alignment="CENTER_LEFT" spacing="5">
-                                        <FontIcon iconLiteral="fas-tint" iconSize="16"/>
-                                        <Text text="Humidity:"/>
-                                        <Text fx:id="humidityText" text="--%"/>
-                                    </HBox>
+                        <!-- Current Weather Card -->
+                        <VBox fx:id="currentWeatherCard" styleClass="weather-card" spacing="15" visible="false">
+                            <!-- Main Weather Info -->
+                            <HBox spacing="20" alignment="CENTER_LEFT">
+                                <!-- Weather Icon and Temperature -->
+                                <VBox alignment="CENTER" spacing="5">
+                                    <FontIcon fx:id="weatherIcon" iconLiteral="fas-cloud" iconSize="64" styleClass="weather-icon"/>
+                                    <Text fx:id="temperatureText" text="--°C" styleClass="temperature-text"/>
+                                    <Text fx:id="weatherDescription" text="Weather condition" styleClass="weather-description"/>
                                 </VBox>
+
+                                <!-- Location and Date -->
                                 <VBox spacing="5">
-                                    <HBox alignment="CENTER_LEFT" spacing="5">
-                                        <FontIcon iconLiteral="fas-wind" iconSize="16"/>
-                                        <Text text="Wind:"/>
-                                        <Text fx:id="windText" text="-- m/s"/>
+                                    <Text fx:id="locationText" text="Location" styleClass="location-text"/>
+                                    <Text fx:id="dateTimeText" text="Date and Time" styleClass="date-text"/>
+                                    <HBox spacing="20" alignment="CENTER_LEFT">
+                                        <HBox spacing="5" alignment="CENTER_LEFT">
+                                            <FontIcon iconLiteral="fas-thermometer-half" iconSize="16"/>
+                                            <Text text="Feels like: "/>
+                                            <Text fx:id="feelsLikeText" text="--°C"/>
+                                        </HBox>
+
+                                        <HBox spacing="5" alignment="CENTER_LEFT">
+                                            <FontIcon iconLiteral="fas-tint" iconSize="16"/>
+                                            <Text text="Humidity: "/>
+                                            <Text fx:id="humidityText" text="--%"/>
+                                        </HBox>
                                     </HBox>
-                                    <HBox alignment="CENTER_LEFT" spacing="5">
-                                        <FontIcon iconLiteral="fas-compass" iconSize="16"/>
-                                        <Text text="Direction:"/>
-                                        <Text fx:id="windDirectionText" text="--°"/>
+
+                                    <HBox spacing="20" alignment="CENTER_LEFT">
+                                        <HBox spacing="5" alignment="CENTER_LEFT">
+                                            <FontIcon iconLiteral="fas-wind" iconSize="16"/>
+                                            <Text text="Wind: "/>
+                                            <Text fx:id="windText" text="-- m/s"/>
+                                        </HBox>
+
+                                        <HBox spacing="5" alignment="CENTER_LEFT">
+                                            <FontIcon iconLiteral="fas-compass" iconSize="16"/>
+                                            <Text text="Direction: "/>
+                                            <Text fx:id="windDirectionText" text="--"/>
+                                        </HBox>
                                     </HBox>
                                 </VBox>
                             </HBox>
-                        </VBox>
-                    </HBox>
-                </VBox>
 
-                <!-- Produce Weather Advisory Section -->
-                <VBox styleClass="weather-card">
-                    <padding>
-                        <Insets top="20" right="20" bottom="20" left="20"/>
-                    </padding>
-                    <Text styleClass="section-title" text="Crop Weather Advisory"/>
-                    <HBox spacing="10" alignment="CENTER_LEFT">
-                        <ComboBox fx:id="produceComboBox" promptText="Select a crop" styleClass="styled-combo-box" prefWidth="200"/>
-                        <Button styleClass="primary-button" text="Get Advice" onAction="#handleGetAdviceAction"/>
-                    </HBox>
-                    <VBox fx:id="adviceContainer" spacing="10" visible="false">
+                            <!-- Weather Impact on Farming -->
+                            <VBox spacing="10">
+                                <HBox alignment="CENTER_LEFT" spacing="10">
+                                    <FontIcon iconLiteral="fas-info-circle" iconSize="16"/>
+                                    <Text text="Weather Impact on Farming" styleClass="section-title"/>
+                                </HBox>
+
+                                <GridPane hgap="10" vgap="5">
+                                    <!-- Column 1 -->
+                                    <VBox spacing="5" styleClass="impact-card" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                                        <HBox alignment="CENTER_LEFT" spacing="5">
+                                            <FontIcon iconLiteral="fas-seedling" iconSize="14"/>
+                                            <Text text="Planting" styleClass="impact-title"/>
+                                        </HBox>
+                                        <Text fx:id="plantingImpactText" text="Loading..." styleClass="impact-text" wrappingWidth="150"/>
+                                    </VBox>
+
+                                    <!-- Column 2 -->
+                                    <VBox spacing="5" styleClass="impact-card" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                                        <HBox alignment="CENTER_LEFT" spacing="5">
+                                            <FontIcon iconLiteral="fas-tint" iconSize="14"/>
+                                            <Text text="Irrigation" styleClass="impact-title"/>
+                                        </HBox>
+                                        <Text fx:id="irrigationImpactText" text="Loading..." styleClass="impact-text" wrappingWidth="150"/>
+                                    </VBox>
+
+                                    <!-- Column 3 -->
+                                    <VBox spacing="5" styleClass="impact-card" GridPane.columnIndex="2" GridPane.rowIndex="0">
+                                        <HBox alignment="CENTER_LEFT" spacing="5">
+                                            <FontIcon iconLiteral="fas-spray-can" iconSize="14"/>
+                                            <Text text="Spraying" styleClass="impact-title"/>
+                                        </HBox>
+                                        <Text fx:id="sprayingImpactText" text="Loading..." styleClass="impact-text" wrappingWidth="150"/>
+                                    </VBox>
+
+                                    <!-- Row 2 -->
+                                    <VBox spacing="5" styleClass="impact-card" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                                        <HBox alignment="CENTER_LEFT" spacing="5">
+                                            <FontIcon iconLiteral="fas-bug" iconSize="14"/>
+                                            <Text text="Pest Risk" styleClass="impact-title"/>
+                                        </HBox>
+                                        <Text fx:id="pestRiskText" text="Loading..." styleClass="impact-text" wrappingWidth="150"/>
+                                    </VBox>
+
+                                    <VBox spacing="5" styleClass="impact-card" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                        <HBox alignment="CENTER_LEFT" spacing="5">
+                                            <FontIcon iconLiteral="fas-disease" iconSize="14"/>
+                                            <Text text="Disease Risk" styleClass="impact-title"/>
+                                        </HBox>
+                                        <Text fx:id="diseaseRiskText" text="Loading..." styleClass="impact-text" wrappingWidth="150"/>
+                                    </VBox>
+
+                                    <VBox spacing="5" styleClass="impact-card" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                                        <HBox alignment="CENTER_LEFT" spacing="5">
+                                            <FontIcon iconLiteral="fas-warehouse" iconSize="14"/>
+                                            <Text text="Harvesting" styleClass="impact-title"/>
+                                        </HBox>
+                                        <Text fx:id="harvestingImpactText" text="Loading..." styleClass="impact-text" wrappingWidth="150"/>
+                                    </VBox>
+                                </GridPane>
+                            </VBox>
+
+                            <!-- Forecast Section -->
+                            <VBox spacing="10">
+                                <Text text="5-Day Forecast" styleClass="section-title"/>
+                                <HBox fx:id="forecastContainer" spacing="10" alignment="CENTER_LEFT">
+                                    <!-- Forecast day cards will be added here -->
+                                </HBox>
+                            </VBox>
+                        </VBox>
+                    </VBox>
+                </ScrollPane>
+            </Tab>
+
+            <!-- Crop Advice Tab -->
+            <Tab text="Crop Advice" closable="false">
+                <ScrollPane fitToWidth="true" styleClass="content-scroll">
+                    <VBox spacing="20" styleClass="content-area">
                         <padding>
-                            <Insets top="15" bottom="0" left="0" right="0"/>
+                            <Insets top="20" right="20" bottom="20" left="20"/>
                         </padding>
-                        <HBox alignment="CENTER_LEFT" spacing="10">
-                            <FontIcon iconLiteral="fas-seedling" iconSize="24" styleClass="crop-icon"/>
-                            <Text fx:id="cropNameText" styleClass="crop-name" text="Crop Name"/>
-                        </HBox>
-                        <HBox spacing="20">
-                            <VBox spacing="5" minWidth="180">
-                                <Text styleClass="subtitle" text="Temperature Range:"/>
-                                <Text fx:id="tempRangeText" text="-- to --°C"/>
-                                <Text styleClass="subtitle" text="Optimal: --°C"/>
-                            </VBox>
-                            <VBox spacing="5" minWidth="180">
-                                <Text styleClass="subtitle" text="Humidity Range:"/>
-                                <Text fx:id="humidityRangeText" text="-- to --%"/>
-                                <Text styleClass="subtitle" text="Optimal: --%"/>
-                            </VBox>
-                        </HBox>
-                        <Text styleClass="subtitle" text="Planting Season:"/>
-                        <Text fx:id="plantingSeasonText" text="--"/>
-                        <Text styleClass="subtitle" text="Harvest Season:"/>
-                        <Text fx:id="harvestSeasonText" text="--"/>
-                        <Text styleClass="subtitle" text="Weather Advisory:"/>
-                        <Text fx:id="adviceText" styleClass="advice-text" text="Select a crop and location to get weather advice."/>
-                    </VBox>
-                </VBox>
 
-                <!-- Forecast Section -->
-                <VBox styleClass="weather-card">
-                    <padding>
-                        <Insets top="20" right="20" bottom="20" left="20"/>
-                    </padding>
-                    <Text styleClass="section-title" text="5-Day Forecast"/>
-                    <HBox fx:id="forecastContainer" spacing="15" alignment="CENTER">
-                        <!-- Forecast cards will be added dynamically -->
-                        <VBox styleClass="forecast-day">
-                            <VBox alignment="CENTER" spacing="5">
-                                <Text styleClass="forecast-date" text="--"/>
-                                <FontIcon iconLiteral="fas-cloud" iconSize="32" styleClass="forecast-icon"/>
-                                <Text styleClass="forecast-temp" text="--°C"/>
-                                <Text styleClass="forecast-desc" text="--"/>
-                            </VBox>
+                        <!-- Crop Selection -->
+                        <HBox spacing="15" alignment="CENTER_LEFT">
+                            <Text text="Ghana Crop Weather Advisor" styleClass="section-title"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label text="Select Crop:"/>
+                            <ComboBox fx:id="produceComboBox" prefWidth="200"/>
+                            <Button styleClass="primary-button" text="Get Advice" onAction="#handleGetAdviceAction">
+                                <graphic>
+                                    <FontIcon iconLiteral="fas-leaf" iconSize="14"/>
+                                </graphic>
+                            </Button>
+                        </HBox>
+
+                        <!-- Crop Advice Container -->
+                        <VBox fx:id="adviceContainer" spacing="15" styleClass="advice-container">
+                            <!-- Advice content will be added here -->
+                            <Text text="Select a crop and click 'Get Advice' to see Ghanaian-specific recommendations based on current weather conditions." styleClass="info-text" wrappingWidth="500"/>
                         </VBox>
-                    </HBox>
-                </VBox>
-
-                <!-- Tips Section -->
-                <VBox styleClass="weather-card">
-                    <padding>
-                        <Insets top="20" right="20" bottom="20" left="20"/>
-                    </padding>
-                    <Text styleClass="section-title" text="Weather Tips for Farmers"/>
-                    <VBox spacing="10">
-                        <HBox alignment="CENTER_LEFT" spacing="10">
-                            <FontIcon iconLiteral="fas-tint" iconSize="18" styleClass="tip-icon"/>
-                            <Text styleClass="tip-text" text="Monitor rainfall patterns and adjust irrigation accordingly."/>
-                        </HBox>
-                        <HBox alignment="CENTER_LEFT" spacing="10">
-                            <FontIcon iconLiteral="fas-thermometer-half" iconSize="18" styleClass="tip-icon"/>
-                            <Text styleClass="tip-text" text="Extreme temperatures can affect crop growth. Provide shade where necessary."/>
-                        </HBox>
-                        <HBox alignment="CENTER_LEFT" spacing="10">
-                            <FontIcon iconLiteral="fas-wind" iconSize="18" styleClass="tip-icon"/>
-                            <Text styleClass="tip-text" text="Strong winds can damage crops. Consider windbreaks for protection."/>
-                        </HBox>
-                        <HBox alignment="CENTER_LEFT" spacing="10">
-                            <FontIcon iconLiteral="fas-cloud-sun-rain" iconSize="18" styleClass="tip-icon"/>
-                            <Text styleClass="tip-text" text="Unexpected weather changes can impact crop health. Stay updated with forecasts."/>
-                        </HBox>
-                        <HBox alignment="CENTER_LEFT" spacing="10">
-                            <FontIcon iconLiteral="fas-seedling" iconSize="18" styleClass="tip-icon"/>
-                            <Text styleClass="tip-text" text="Different crops have different weather requirements. Plan planting accordingly."/>
-                        </HBox>
                     </VBox>
-                </VBox>
+                </ScrollPane>
+            </Tab>
 
-            </VBox>
-        </ScrollPane>
+            <!-- Weather Alerts Tab -->
+            <Tab text="Weather Alerts" closable="false">
+                <ScrollPane fitToWidth="true" styleClass="content-scroll">
+                    <VBox spacing="20" styleClass="content-area">
+                        <padding>
+                            <Insets top="20" right="20" bottom="20" left="20"/>
+                        </padding>
+
+                        <Text text="Ghana Weather Alerts" styleClass="section-title"/>
+
+                        <!-- Weather Alerts Container -->
+                        <VBox fx:id="alertsContainer" spacing="15" styleClass="alerts-container">
+                            <!-- Alert content will be added here -->
+                            <Text text="No active weather alerts for your location." styleClass="info-text"/>
+                        </VBox>
+                    </VBox>
+                </ScrollPane>
+            </Tab>
+
+            <!-- Weather Trends Tab -->
+            <Tab text="Weather Trends" closable="false">
+                <ScrollPane fitToWidth="true" styleClass="content-scroll">
+                    <VBox spacing="20" styleClass="content-area">
+                        <padding>
+                            <Insets top="20" right="20" bottom="20" left="20"/>
+                        </padding>
+
+                        <Text text="Temperature Forecast" styleClass="section-title"/>
+                        <LineChart fx:id="tempTrendChart" prefHeight="250" createSymbols="false">
+                            <xAxis>
+                                <CategoryAxis label="Date/Time"/>
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis label="Temperature (°C)"/>
+                            </yAxis>
+                        </LineChart>
+
+                        <Text text="Humidity Forecast" styleClass="section-title"/>
+                        <LineChart fx:id="rainTrendChart" prefHeight="250" createSymbols="false">
+                            <xAxis>
+                                <CategoryAxis label="Date/Time"/>
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis label="Humidity (%)"/>
+                            </yAxis>
+                        </LineChart>
+                    </VBox>
+                </ScrollPane>
+            </Tab>
+
+            <!-- Planting Calendar Tab -->
+            <Tab text="Planting Calendar" closable="false">
+                <ScrollPane fitToWidth="true" styleClass="content-scroll">
+                    <VBox spacing="20" styleClass="content-area">
+                        <padding>
+                            <Insets top="20" right="20" bottom="20" left="20"/>
+                        </padding>
+
+                        <HBox spacing="15" alignment="CENTER_LEFT">
+                            <Text text="Ghana Planting Calendar" styleClass="section-title"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label text="Region:"/>
+                            <ComboBox fx:id="regionSelector" prefWidth="150"/>
+                            <Label text="Month:"/>
+                            <ComboBox fx:id="monthSelector" prefWidth="120"/>
+                        </HBox>
+
+                        <!-- Calendar Container -->
+                        <VBox fx:id="calendarContainer" spacing="15" styleClass="calendar-container">
+                            <!-- Calendar content will be added here -->
+                        </VBox>
+                    </VBox>
+                </ScrollPane>
+            </Tab>
+
+            <!-- Ghana-specific Farming Tips Tab -->
+            <Tab text="Local Knowledge" closable="false">
+                <ScrollPane fitToWidth="true" styleClass="content-scroll">
+                    <VBox spacing="20" styleClass="content-area">
+                        <padding>
+                            <Insets top="20" right="20" bottom="20" left="20"/>
+                        </padding>
+
+                        <Text text="Ghana Traditional Farming Knowledge" styleClass="section-title"/>
+
+                        <!-- Traditional Weather Signs -->
+                        <TitledPane text="Traditional Weather Signs" expanded="true">
+                            <VBox spacing="10">
+                                <Text wrappingWidth="500" text="Many Ghanaian farmers rely on traditional knowledge to predict weather patterns. Here are some commonly observed signs:"/>
+
+                                <GridPane hgap="15" vgap="10">
+                                    <columnConstraints>
+                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                    </columnConstraints>
+
+                                    <!-- Row 1 -->
+                                    <VBox styleClass="knowledge-card" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                                        <Text styleClass="knowledge-title" text="Ants Moving in Lines"/>
+                                        <Text styleClass="knowledge-text" wrappingWidth="220" text="When ants are observed moving in straight lines and carrying their eggs, it often indicates approaching rainfall."/>
+                                    </VBox>
+
+                                    <VBox styleClass="knowledge-card" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                                        <Text styleClass="knowledge-title" text="Heavy Morning Dew"/>
+                                        <Text styleClass="knowledge-text" wrappingWidth="220" text="Abundant dew on plants in the early morning traditionally indicates no rain that day, while absence of dew may suggest rain is coming."/>
+                                    </VBox>
+
+                                    <!-- Row 2 -->
+                                    <VBox styleClass="knowledge-card" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                                        <Text styleClass="knowledge-title" text="Bird Behavior"/>
+                                        <Text styleClass="knowledge-text" wrappingWidth="220" text="When the 'lelek' (cattle egret) flies low, it often indicates approaching rain. Frequent crowing of cocks outside normal times may also signal changing weather."/>
+                                    </VBox>
+
+                                    <VBox styleClass="knowledge-card" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                        <Text styleClass="knowledge-title" text="Red Sunset"/>
+                                        <Text styleClass="knowledge-text" wrappingWidth="220" text="A particularly red sunset is traditionally believed to indicate good weather the following day, while a pale sunset may suggest rain."/>
+                                    </VBox>
+                                </GridPane>
+                            </VBox>
+                        </TitledPane>
+
+                        <!-- Traditional Farming Calendar -->
+                        <TitledPane text="Traditional Farming Calendar" expanded="false">
+                            <VBox spacing="10">
+                                <Text wrappingWidth="500" text="The traditional farming calendar in Ghana follows natural cues and seasonal patterns rather than strict calendar dates. These observations vary by region:"/>
+
+                                <HBox spacing="15">
+                                    <VBox styleClass="region-calendar" prefWidth="250">
+                                        <Text styleClass="region-title" text="Northern Ghana"/>
+                                        <Text styleClass="calendar-text" wrappingWidth="230" text="• Planting begins when the baobab tree starts sprouting new leaves (typically May)"/>
+                                        <Text styleClass="calendar-text" wrappingWidth="230" text="• Early millet planting occurs with the first good rains"/>
+                                        <Text styleClass="calendar-text" wrappingWidth="230" text="• Main crops are planted when the Pleiades star cluster is visible in the evening (June-July)"/>
+                                        <Text styleClass="calendar-text" wrappingWidth="230" text="• Harvesting begins when shea trees start losing their leaves"/>
+                                    </VBox>
+
+                                    <VBox styleClass="region-calendar" prefWidth="250">
+                                        <Text styleClass="region-title" text="Southern Ghana"/>
+                                        <Text styleClass="calendar-text" wrappingWidth="230" text="• Major season planting begins when the cuckoo bird (akokɔbenso) starts calling (March)"/>
+                                        <Text styleClass="calendar-text" wrappingWidth="230" text="• Minor season planting is timed with frog croaking intensifying (September)"/>
+                                        <Text styleClass="calendar-text" wrappingWidth="230" text="• Cassava planting is traditionally done when certain trees flower"/>
+                                        <Text styleClass="calendar-text" wrappingWidth="230" text="• Yam harvesting traditionally begins after the first appearance of the new moon in August"/>
+                                    </VBox>
+                                </HBox>
+                            </VBox>
+                        </TitledPane>
+
+                        <!-- Traditional Soil Knowledge -->
+                        <TitledPane text="Traditional Soil Knowledge" expanded="false">
+                            <VBox spacing="10">
+                                <Text wrappingWidth="500" text="Ghanaian farmers have developed methods to assess soil quality without modern testing:"/>
+
+                                <GridPane hgap="15" vgap="10">
+                                    <columnConstraints>
+                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                    </columnConstraints>
+
+                                    <!-- Row 1 -->
+                                    <VBox styleClass="knowledge-card" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                                        <Text styleClass="knowledge-title" text="Soil Color Assessment"/>
+                                        <Text styleClass="knowledge-text" wrappingWidth="220" text="Black or dark brown soils ('asase tuntum' in Akan) are considered fertile for most crops. Reddish soils are often planted with cassava and yams."/>
+                                    </VBox>
+
+                                    <VBox styleClass="knowledge-card" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                                        <Text styleClass="knowledge-title" text="Plant Indicators"/>
+                                        <Text styleClass="knowledge-text" wrappingWidth="220" text="The presence of certain weeds like 'acheampong' (Chromolaena odorata) indicates fertile soil suitable for most crops."/>
+                                    </VBox>
+
+                                    <!-- Row 2 -->
+                                    <VBox styleClass="knowledge-card" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                                        <Text styleClass="knowledge-title" text="Soil Texture Test"/>
+                                        <Text styleClass="knowledge-text" wrappingWidth="220" text="Farmers roll soil between fingers: good soil holds together without being too sticky or crumbly. Many farmers also taste small amounts of soil to assess quality."/>
+                                    </VBox>
+
+                                    <VBox styleClass="knowledge-card" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                        <Text styleClass="knowledge-title" text="Earthworm Presence"/>
+                                        <Text styleClass="knowledge-text" wrappingWidth="220" text="Soil with many earthworms is considered highly fertile. Farmers often check for their presence when evaluating new farming land."/>
+                                    </VBox>
+                                </GridPane>
+                            </VBox>
+                        </TitledPane>
+                    </VBox>
+                </ScrollPane>
+            </Tab>
+        </TabPane>
     </VBox>
 </AnchorPane>

@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-public class InventoryManagementController implements Initializable {
+public class InventoryManagementController extends BaseController implements Initializable {
     @FXML private VBox mainContentVBox;
     @FXML private TableView<Inventory> inventoryTable;
     @FXML private TableColumn<Inventory, String> produceNameColumn;
@@ -66,7 +66,13 @@ public class InventoryManagementController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // Set user name
-        userNameText.setText(SessionManager.getCurrentUser().getFullName());
+        if (SessionManager.getCurrentUser() != null) {
+            userNameText.setText(SessionManager.getCurrentUser().getFullName());
+        }
+
+        // Mark inventory button as active
+        resetNavButtonStyles(dashboardButton, produceButton, salesButton, marketPricesButton, weatherButton);
+        inventoryButton.getStyleClass().add("active-nav-item");
 
         // Setup table columns
         setupTableColumns();
@@ -123,19 +129,7 @@ public class InventoryManagementController implements Initializable {
 
     @FXML
     private void handleWeatherAction() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/weather.fxml"));
-            Parent weatherView = loader.load();
-
-            Stage stage = (Stage) dashboardButton.getScene().getWindow();
-            Scene scene = new Scene(weatherView);
-            scene.getStylesheets().add(getClass().getResource("/styles/dark-theme.css").toExternalForm());
-
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        navigateTo("/fxml/weather.fxml", weatherButton);
     }
 
     private void setupTableColumns() {
@@ -352,6 +346,8 @@ public class InventoryManagementController implements Initializable {
         } catch (NumberFormatException e) {
             showAlert(Alert.AlertType.ERROR, "Error", "Please enter valid numbers for quantity and price.");
         }
+        inventoryFormOverlay.setVisible(false);
+        inventoryFormOverlay.setManaged(false);
     }
 
     @FXML
@@ -393,77 +389,29 @@ public class InventoryManagementController implements Initializable {
     // Navigation Methods
     @FXML
     private void handleDashboardAction() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/main-dashboard.fxml"));
-            Parent dashboardView = loader.load();
-
-            Stage stage = (Stage) dashboardButton.getScene().getWindow();
-            Scene scene = new Scene(dashboardView);
-            scene.getStylesheets().add(getClass().getResource("/styles/dark-theme.css").toExternalForm());
-
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        navigateTo("/fxml/main-dashboard.fxml", dashboardButton);
     }
 
     @FXML
     private void handleProduceAction() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/produce-management.fxml"));
-            Parent produceView = loader.load();
-
-            Stage stage = (Stage) produceButton.getScene().getWindow();
-            Scene scene = new Scene(produceView);
-            scene.getStylesheets().add(getClass().getResource("/styles/dark-theme.css").toExternalForm());
-
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        navigateTo("/fxml/produce-management.fxml", produceButton);
     }
 
     @FXML
     private void handleInventoryAction() {
         // Already on inventory page
-        resetNavButtonStyles();
+        resetNavButtonStyles(dashboardButton, produceButton, salesButton, marketPricesButton, weatherButton);
         inventoryButton.getStyleClass().add("active-nav-item");
     }
 
     @FXML
     private void handleSalesAction() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/sales-management.fxml"));
-            Parent salesView = loader.load();
-
-            Stage stage = (Stage) salesButton.getScene().getWindow();
-            Scene scene = new Scene(salesView);
-            scene.getStylesheets().add(getClass().getResource("/styles/dark-theme.css").toExternalForm());
-
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        navigateTo("/fxml/sales-management.fxml", salesButton);
     }
 
     @FXML
     private void handleMarketPricesAction() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/market-prices.fxml"));
-            Parent pricesView = loader.load();
-
-            Stage stage = (Stage) marketPricesButton.getScene().getWindow();
-            Scene scene = new Scene(pricesView);
-            scene.getStylesheets().add(getClass().getResource("/styles/dark-theme.css").toExternalForm());
-
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        navigateTo("/fxml/market-prices.fxml", marketPricesButton);
     }
 
     @FXML
@@ -473,26 +421,8 @@ public class InventoryManagementController implements Initializable {
 
     @FXML
     private void handleLogoutAction() {
-        // Clear session
         SessionManager.clearSession();
-
-        // Stop services
-        MarketPriceService.stopPriceUpdateService();
-
-        // Navigate to login
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/login.fxml"));
-            Parent loginView = loader.load();
-
-            Stage stage = (Stage) dashboardButton.getScene().getWindow();
-            Scene scene = new Scene(loginView);
-            scene.getStylesheets().add(getClass().getResource("/styles/dark-theme.css").toExternalForm());
-
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        navigateTo("/fxml/login.fxml", inventoryButton);
     }
 
     private void resetNavButtonStyles() {

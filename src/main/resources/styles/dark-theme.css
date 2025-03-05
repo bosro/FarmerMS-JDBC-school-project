@@ -614,90 +614,84 @@ VBox {
 
 
 /* Specific styling for market prices table */
-#marketPricesTable .table-cell {
-    -fx-text-fill: white !important;
-    -fx-font-size: 12px;
+/* Enhanced market prices table styling */
+#marketPricesTable {
+    -fx-background-color: #232323;
+    -fx-table-cell-border-color: rgba(80, 80, 80, 0.3);
+    -fx-padding: 5;
+}
 
+#marketPricesTable .column-header {
+    -fx-background-color: #1a1a1a;
+    -fx-padding: 12px 15px;
+    -fx-font-size: 13px;
+}
+
+#marketPricesTable .column-header .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+#marketPricesTable .table-cell {
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+    -fx-padding: 12px 15px;
+    -fx-border-color: transparent transparent rgba(80, 80, 80, 0.2) transparent;
 }
 
 #marketPricesTable .table-row-cell {
-    -fx-background-color: -card-bg;
+    -fx-background-color: #232323;
 }
 
 #marketPricesTable .table-row-cell:odd {
-    -fx-background-color: derive(-card-bg, -5%);
+    -fx-background-color: #2a2a2a;
 }
 
 #marketPricesTable .table-row-cell:selected {
-    -fx-background-color: derive(-primary-color, -40%);
+    -fx-background-color: #6C63FF40;
 }
-
 
 
 
 /* Weather Page Specific Styles */
+/* Weather card dark theme */
 .weather-card {
-    -fx-background-color: white;
+    -fx-background-color: #232323;
     -fx-background-radius: 8px;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5);
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 5);
     -fx-padding: 15;
     -fx-spacing: 10;
-    -fx-margin: 0 0 20 0;
 }
 
 .temperature-text {
+    -fx-fill: white;
     -fx-font-size: 42px;
     -fx-font-weight: bold;
 }
 
 .weather-description {
+    -fx-fill: #cccccc;
     -fx-font-size: 16px;
-    -fx-text-fill: #555;
     -fx-text-transform: capitalize;
 }
 
 .weather-icon {
-    -fx-fill: #4b6cb7;
+    -fx-fill: #6C63FF;
 }
 
 .location-text {
+    -fx-fill: white;
     -fx-font-size: 24px;
     -fx-font-weight: bold;
 }
 
 .date-text {
+    -fx-fill: #aaaaaa;
     -fx-font-size: 14px;
-    -fx-text-fill: #666;
-}
-
-.section-title {
-    -fx-font-size: 18px;
-    -fx-font-weight: bold;
-    -fx-margin-bottom: 10;
-}
-
-.crop-name {
-    -fx-font-size: 18px;
-    -fx-font-weight: bold;
-}
-
-.crop-icon {
-    -fx-fill: #2e7d32;
-}
-
-.subtitle {
-    -fx-font-weight: bold;
-    -fx-font-size: 14px;
-}
-
-.advice-text {
-    -fx-font-size: 14px;
-    -fx-fill: #333;
-    -fx-wrap-text: true;
 }
 
 .forecast-day {
-    -fx-background-color: #f8f9fa;
+    -fx-background-color: #2A2A2A;
     -fx-background-radius: 5px;
     -fx-padding: 10;
     -fx-alignment: center;
@@ -705,55 +699,243 @@ VBox {
 }
 
 .forecast-date {
+    -fx-fill: white;
     -fx-font-weight: bold;
     -fx-font-size: 14px;
 }
 
 .forecast-temp {
+    -fx-fill: white;
     -fx-font-size: 16px;
     -fx-font-weight: bold;
 }
 
 .forecast-desc {
+    -fx-fill: #aaaaaa;
     -fx-font-size: 12px;
-    -fx-text-fill: #666;
 }
 
-.forecast-icon {
-    -fx-fill: #4b6cb7;
+.forecast-humidity, .forecast-wind {
+    -fx-fill: #aaaaaa;
+    -fx-font-size: 12px;
 }
 
-.tip-icon {
-    -fx-fill: #4b6cb7;
+.advice-container {
+    -fx-background-color: #2A2A2A;
+    -fx-background-radius: 8px;
+    -fx-padding: 15;
 }
 
-.tip-text {
-    -fx-font-size: 14px;
-    -fx-wrap-text: true;
+.impact-card {
+    -fx-background-color: #2A2A2A;
+    -fx-background-radius: 5px;
+    -fx-padding: 10;
 }
 
-.styled-combo-box {
-    -fx-background-color: white;
-    -fx-border-color: #ddd;
-    -fx-border-radius: 4px;
-    -fx-padding: 5;
-}
-
-.location-label {
+.impact-title {
+    -fx-fill: white;
     -fx-font-weight: bold;
 }
 
-.search-field-container {
-    -fx-background-color: white;
+.impact-text {
+    -fx-fill: #aaaaaa;
+}
+
+.chart-plot-background {
+    -fx-background-color: #1a1a1a;
+}
+
+.chart-vertical-grid-lines {
+    -fx-stroke: #333333;
+}
+
+.chart-horizontal-grid-lines {
+    -fx-stroke: #333333;
+}
+
+.chart-alternative-row-fill {
+    -fx-fill: #1a1a1a;
+    -fx-stroke: transparent;
+    -fx-stroke-width: 0;
+}
+
+.chart-series-line {
+    -fx-stroke-width: 2px;
+}
+
+.default-color0.chart-series-line { -fx-stroke: #6C63FF; }
+.default-color1.chart-series-line { -fx-stroke: #4CAF50; }
+.default-color2.chart-series-line { -fx-stroke: #FF5722; }
+
+
+/* Fix remaining white backgrounds and make UI more consistently dark-themed */
+
+/* Weather Tabs and ScrollPane */
+.weather-tabs {
+    -fx-background-color: -dark-bg;
+}
+
+.weather-tabs .tab-header-area .tab-header-background {
+    -fx-background-color: -card-bg;
+}
+
+.weather-tabs .tab {
+    -fx-background-color: #2a2a2a;
+}
+
+.weather-tabs .tab:selected {
+    -fx-background-color: -primary-color;
+}
+
+.weather-tabs .tab .tab-label {
+    -fx-text-fill: white;
+}
+
+.content-scroll {
+    -fx-background-color: -dark-bg;
+    -fx-background: -dark-bg;
+}
+
+.content-scroll > .viewport {
+    -fx-background-color: -dark-bg;
+}
+
+/* Foreground text colors for all components */
+.text, .label, Text, Label {
+    -fx-fill: white;
+    -fx-text-fill: white;
+}
+
+/* Fix knowledge cards and titled panes */
+.knowledge-card, .knowledge-title, .knowledge-text, .calendar-text, .region-title {
+    -fx-background-color: -card-bg;
+    -fx-fill: white;
+}
+
+.knowledge-card {
+    -fx-background-color: #2a2a2a;
     -fx-background-radius: 5px;
-    -fx-border-color: #ddd;
-    -fx-border-radius: 5px;
-    -fx-padding: 5 10;
+    -fx-padding: 10;
 }
 
-.search-field {
+.region-calendar {
+    -fx-background-color: #2a2a2a;
+    -fx-background-radius: 5px;
+    -fx-padding: 10;
+}
+
+/* TitledPane styling */
+.titled-pane {
+    -fx-text-fill: white;
+}
+
+.titled-pane > .title {
+    -fx-background-color: #2a2a2a;
+    -fx-border-color: #3a3a3a;
+}
+
+.titled-pane > .title > .text {
+    -fx-fill: white;
+}
+
+.titled-pane > .content {
+    -fx-background-color: -dark-bg;
+    -fx-border-color: #3a3a3a;
+}
+
+/* Chart styling */
+.chart {
+    -fx-background-color: -dark-bg;
+    -fx-padding: 5;
+    -fx-background-radius: 5;
+}
+
+.chart-content {
+    -fx-background-color: -dark-bg;
+}
+
+.axis {
+    -fx-tick-label-fill: #aaaaaa;
+}
+
+.axis-label {
+    -fx-text-fill: white;
+}
+
+/* ComboBox dark styling */
+.combo-box {
+    -fx-background-color: #2a2a2a;
+    -fx-border-color: #3a3a3a;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: #aaaaaa;
+}
+
+.combo-box .list-cell {
+    -fx-background-color: #2a2a2a;
+    -fx-text-fill: white;
+}
+
+.combo-box .list-view {
+    -fx-background-color: #2a2a2a;
+    -fx-border-color: #3a3a3a;
+}
+
+.combo-box .arrow-button {
     -fx-background-color: transparent;
-    -fx-border-color: transparent;
-    -fx-padding: 0;
 }
 
+.combo-box .arrow {
+    -fx-background-color: white;
+}
+
+/* Additional styling fixes */
+.alerts-container, .calendar-container {
+    -fx-background-color: #2a2a2a;
+    -fx-background-radius: 8px;
+    -fx-padding: 15;
+}
+
+/* Weather impacts section */
+.impact-card {
+    -fx-background-color: #2a2a2a;
+    -fx-background-radius: 5px;
+    -fx-border-color: #3a3a3a;
+    -fx-border-radius: 5px;
+    -fx-border-width: 1px;
+    -fx-padding: 10;
+}
+
+/* Forecast day cards styling */
+.forecast-day {
+    -fx-background-color: #2a2a2a;
+    -fx-background-radius: 5px;
+    -fx-border-color: #3a3a3a;
+    -fx-border-radius: 5px;
+    -fx-border-width: 1px;
+    -fx-padding: 10;
+}
+
+/* Section titles */
+.section-title {
+    -fx-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 18px;
+}
+
+/* Make all scrollpanes dark */
+.scroll-pane {
+    -fx-background: -dark-bg;
+    -fx-background-color: -dark-bg;
+}
+
+.scroll-pane > .viewport {
+    -fx-background-color: -dark-bg;
+}
+
+.scroll-pane .scroll-bar {
+    -fx-background-color: #1a1a1a;
+}
+
+.scroll-pane .scroll-bar .thumb {
+    -fx-background-color: #3a3a3a;
+}

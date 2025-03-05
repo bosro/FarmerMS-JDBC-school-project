@@ -8,17 +8,15 @@ public class CropWeatherRecommendation {
     private double minHumidity;
     private double maxHumidity;
     private double optimalHumidity;
-    private String bestSeason;
-    private String worstSeason;
+    private String plantingSeason;
+    private String harvestSeason;
     private String tips;
 
-    // Default constructor
-    public CropWeatherRecommendation() {}
-
-    // Constructor with parameters
+    // Constructor
     public CropWeatherRecommendation(String crop, double minTemperature, double maxTemperature,
                                      double optimalTemperature, double minHumidity, double maxHumidity,
-                                     double optimalHumidity, String bestSeason, String worstSeason, String tips) {
+                                     double optimalHumidity, String plantingSeason, String harvestSeason,
+                                     String tips) {
         this.crop = crop;
         this.minTemperature = minTemperature;
         this.maxTemperature = maxTemperature;
@@ -26,8 +24,8 @@ public class CropWeatherRecommendation {
         this.minHumidity = minHumidity;
         this.maxHumidity = maxHumidity;
         this.optimalHumidity = optimalHumidity;
-        this.bestSeason = bestSeason;
-        this.worstSeason = worstSeason;
+        this.plantingSeason = plantingSeason;
+        this.harvestSeason = harvestSeason;
         this.tips = tips;
     }
 
@@ -88,20 +86,20 @@ public class CropWeatherRecommendation {
         this.optimalHumidity = optimalHumidity;
     }
 
-    public String getBestSeason() {
-        return bestSeason;
+    public String getPlantingSeason() {
+        return plantingSeason;
     }
 
-    public void setBestSeason(String bestSeason) {
-        this.bestSeason = bestSeason;
+    public void setPlantingSeason(String plantingSeason) {
+        this.plantingSeason = plantingSeason;
     }
 
-    public String getWorstSeason() {
-        return worstSeason;
+    public String getHarvestSeason() {
+        return harvestSeason;
     }
 
-    public void setWorstSeason(String worstSeason) {
-        this.worstSeason = worstSeason;
+    public void setHarvestSeason(String harvestSeason) {
+        this.harvestSeason = harvestSeason;
     }
 
     public String getTips() {

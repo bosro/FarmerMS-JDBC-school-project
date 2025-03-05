@@ -18,6 +18,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
@@ -35,7 +36,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class FarmerDashboardController implements Initializable {
+public class FarmerDashboardController extends BaseController implements Initializable {
     @FXML private LineChart<String, Number> salesChart;
     @FXML private LineChart<String, Number> inventoryChart;
     @FXML private ComboBox<String> salesPeriodSelector;
@@ -69,7 +70,13 @@ public class FarmerDashboardController implements Initializable {
         initializeSelectors();
 
         // Set user name
-        userNameText.setText(SessionManager.getCurrentUser().getFullName());
+        if (SessionManager.getCurrentUser() != null) {
+            userNameText.setText(SessionManager.getCurrentUser().getFullName());
+        }
+
+        // Mark dashboard button as active
+        resetNavButtonStyles(produceButton, inventoryButton, salesButton, marketPricesButton, weatherButton);
+        dashboardButton.getStyleClass().add("active-nav-item");
 
         // Setup charts and load data
         setupCharts();
@@ -81,19 +88,7 @@ public class FarmerDashboardController implements Initializable {
 
     @FXML
     private void handleWeatherAction() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/weather.fxml"));
-            Parent weatherView = loader.load();
-
-            Stage stage = (Stage) dashboardButton.getScene().getWindow();
-            Scene scene = new Scene(weatherView);
-            scene.getStylesheets().add(getClass().getResource("/styles/dark-theme.css").toExternalForm());
-
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        navigateTo("/fxml/weather.fxml", weatherButton);
     }
 
     private void initializeSelectors() {
@@ -312,77 +307,30 @@ public class FarmerDashboardController implements Initializable {
     @FXML
     private void handleDashboardAction() {
         // Already on dashboard
-        resetNavButtonStyles();
+        resetNavButtonStyles(produceButton, inventoryButton, salesButton, marketPricesButton, weatherButton);
         dashboardButton.getStyleClass().add("active-nav-item");
     }
 
     @FXML
     private void handleProduceAction() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/produce-management.fxml"));
-            Parent produceView = loader.load();
-
-            Stage stage = (Stage) dashboardButton.getScene().getWindow();
-            Scene scene = new Scene(produceView);
-            scene.getStylesheets().add(getClass().getResource("/styles/dark-theme.css").toExternalForm());
-
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        navigateTo("/fxml/produce-management.fxml", produceButton);
     }
 
     @FXML
     private void handleInventoryAction() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/inventory-management.fxml"));
-            Parent inventoryView = loader.load();
-
-            Stage stage = (Stage) dashboardButton.getScene().getWindow();
-            Scene scene = new Scene(inventoryView);
-            scene.getStylesheets().add(getClass().getResource("/styles/dark-theme.css").toExternalForm());
-
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        navigateTo("/fxml/inventory-management.fxml", inventoryButton);
     }
 
     @FXML
     private void handleSalesAction() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/sales-management.fxml"));
-            Parent salesView = loader.load();
-
-            Stage stage = (Stage) dashboardButton.getScene().getWindow();
-            Scene scene = new Scene(salesView);
-            scene.getStylesheets().add(getClass().getResource("/styles/dark-theme.css").toExternalForm());
-
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        navigateTo("/fxml/sales-management.fxml", salesButton);
     }
 
     @FXML
     private void handleMarketPricesAction() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/market-prices.fxml"));
-            Parent pricesView = loader.load();
-
-            Stage stage = (Stage) dashboardButton.getScene().getWindow();
-            Scene scene = new Scene(pricesView);
-            scene.getStylesheets().add(getClass().getResource("/styles/dark-theme.css").toExternalForm());
-
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        navigateTo("/fxml/market-prices.fxml", marketPricesButton);
     }
+
 
     private void resetNavButtonStyles() {
         dashboardButton.getStyleClass().remove("active-nav-item");
@@ -400,27 +348,10 @@ public class FarmerDashboardController implements Initializable {
 
     @FXML
     private void handleLogoutAction() {
-        // Clear session
         SessionManager.clearSession();
-
-        // Stop services
-        MarketPriceService.stopPriceUpdateService();
-
-        // Navigate to login
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/login.fxml"));
-            Parent loginView = loader.load();
-
-            Stage stage = (Stage) dashboardButton.getScene().getWindow();
-            Scene scene = new Scene(loginView);
-            scene.getStylesheets().add(getClass().getResource("/styles/dark-theme.css").toExternalForm());
-
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        navigateTo("/fxml/login.fxml", dashboardButton);
     }
+
 
     @FXML
     private void handleRefreshAction() {
@@ -434,13 +365,13 @@ public class FarmerDashboardController implements Initializable {
 
     @FXML
     private void handleViewAllSalesAction() {
-        // Navigate to sales page
-        handleSalesAction();
+        navigateTo("/fxml/sales-management.fxml", dashboardButton);
     }
 
     @FXML
     private void handleViewAllPricesAction() {
-        // Navigate to market prices page
-        handleMarketPricesAction();
+        navigateTo("/fxml/market-prices.fxml", dashboardButton);
     }
+
+
 }
